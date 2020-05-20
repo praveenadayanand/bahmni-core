@@ -93,10 +93,12 @@ public class BahmniConceptResource extends ConceptResource2_0 {
 
     @PropertyGetter("names")
     public static Object getNames(Concept concept) {
+        Locale globalDefaultLocale = LocaleUtility.getDefaultLocale();
         Locale userDefaultLocale = LocaleUtility.fromSpecification(Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE));
+
         Collection<ConceptName> names = concept.getNames(userDefaultLocale);
-        if(names.isEmpty()) {
-            names.addAll(concept.getNames(LocaleUtility.getDefaultLocale()));
+        if(globalDefaultLocale != userDefaultLocale ) {
+            names.addAll(concept.getNames(globalDefaultLocale));
         }
         return names;
     }
