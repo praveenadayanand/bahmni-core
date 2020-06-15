@@ -82,13 +82,14 @@ public class BahmniDrugOrderController extends BaseRestController {
                             @RequestParam(value = "visitUuids", required = false) List visitUuids,
                             @RequestParam(value = "startDate", required = false) String startDateStr,
                             @RequestParam(value = "endDate", required = false) String endDateStr,
-                            @RequestParam(value = "getEffectiveOrdersOnly", required = false) Boolean getEffectiveOrdersOnly) throws ParseException {
+                            @RequestParam(value = "getEffectiveOrdersOnly", required = false) Boolean getEffectiveOrdersOnly,
+                            @RequestParam(value = "preferredLocale", required = false) String locale) throws ParseException {
 
         Map<String, Collection<BahmniDrugOrder>> visitWiseOrders = new HashMap<>();
         Date startDate = BahmniDateUtil.convertToDate(startDateStr, BahmniDateUtil.DateFormatType.UTC);
         Date endDate = BahmniDateUtil.convertToDate(endDateStr, BahmniDateUtil.DateFormatType.UTC);
 
-        List<BahmniDrugOrder> prescribedOrders = getPrescribedOrders(visitUuids, patientUuid, true, numberOfVisits, startDate, endDate, Boolean.TRUE.equals(getEffectiveOrdersOnly));
+        List<BahmniDrugOrder> prescribedOrders = getPrescribedOrders(visitUuids, patientUuid, true, numberOfVisits, startDate, endDate, Boolean.TRUE.equals(getEffectiveOrdersOnly), locale);
         visitWiseOrders.put("visitDrugOrders", prescribedOrders);
 
         if (Boolean.TRUE.equals(getOtherActive)) {
@@ -112,7 +113,7 @@ public class BahmniDrugOrderController extends BaseRestController {
         Date endDate = BahmniDateUtil.convertToDate(endDateStr, BahmniDateUtil.DateFormatType.UTC);
 
 
-        return getPrescribedOrders(null, patientUuid, includeActiveVisit, numberOfVisits, startDate, endDate, false);
+        return getPrescribedOrders(null, patientUuid, includeActiveVisit, numberOfVisits, startDate, endDate, false, null);
     }
 
 
@@ -155,20 +156,20 @@ public class BahmniDrugOrderController extends BaseRestController {
     private List<BahmniDrugOrder> getActiveOrders(String patientUuid, Date startDate, Date endDate) {
         List<DrugOrder> activeDrugOrders = drugOrderService.getActiveDrugOrders(patientUuid, startDate, endDate);
         logger.info(activeDrugOrders.size() + " active drug orders found");
-        return getBahmniDrugOrders(patientUuid,activeDrugOrders);
+        return getBahmniDrugOrders(patientUuid,activeDrugOrders, null);
     }
 
-    private List<BahmniDrugOrder> getPrescribedOrders(List<String> visitUuids, String patientUuid, Boolean includeActiveVisit, Integer numberOfVisits, Date startDate, Date endDate, Boolean getEffectiveOrdersOnly) {
+    private List<BahmniDrugOrder> getPrescribedOrders(List<String> visitUuids, String patientUuid, Boolean includeActiveVisit, Integer numberOfVisits, Date startDate, Date endDate, Boolean getEffectiveOrdersOnly, String locale) {
         List<DrugOrder> prescribedDrugOrders = drugOrderService.getPrescribedDrugOrders(visitUuids, patientUuid, includeActiveVisit, numberOfVisits, startDate, endDate, getEffectiveOrdersOnly);
         logger.info(prescribedDrugOrders.size() + " prescribed drug orders found");
-        return getBahmniDrugOrders(patientUuid, prescribedDrugOrders);
+        return getBahmniDrugOrders(patientUuid, prescribedDrugOrders, locale);
     }
 
-    private List<BahmniDrugOrder> getBahmniDrugOrders(String patientUuid, List<DrugOrder> drugOrders) {
+    private List<BahmniDrugOrder> getBahmniDrugOrders(String patientUuid, List<DrugOrder> drugOrders, String locale) {
         Map<String, DrugOrder> drugOrderMap = drugOrderService.getDiscontinuedDrugOrders(drugOrders);
         try {
             Collection<BahmniObservation> orderAttributeObs = bahmniObsService.observationsFor(patientUuid, getOrdAttributeConcepts(), null, null, false, null, null, null);
-            List<BahmniDrugOrder> bahmniDrugOrders = bahmniDrugOrderMapper.mapToResponse(drugOrders, orderAttributeObs, drugOrderMap);
+            List<BahmniDrugOrder> bahmniDrugOrders = bahmniDrugOrderMapper.mapToResponse(drugOrders, orderAttributeObs, drugOrderMap, locale);
             return sortDrugOrdersAccordingToTheirSortWeight(bahmniDrugOrders);
         } catch (IOException e) {
             logger.error("Could not parse drug order", e);
