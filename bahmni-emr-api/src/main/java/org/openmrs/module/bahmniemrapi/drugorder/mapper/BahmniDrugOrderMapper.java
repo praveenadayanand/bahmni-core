@@ -37,8 +37,18 @@ public class BahmniDrugOrderMapper {
 
         for (DrugOrder openMRSDrugOrder : activeDrugOrders) {
             BahmniDrugOrder bahmniDrugOrder = new BahmniDrugOrder();
+
             bahmniDrugOrder.setDrugOrder(drugOrderMapper.mapDrugOrder(openMRSDrugOrder));
             if(locale != null) {
+                Locale tempLocale = new Locale(locale);
+                String localeSpecificName = "";
+                if (openMRSDrugOrder != null) {
+                    localeSpecificName = openMRSDrugOrder.getDrug().getFullName(tempLocale);
+                    bahmniDrugOrder.getDrugOrder().getDrug().setName(localeSpecificName);
+                }
+            }
+
+            if((locale != null) && (openMRSDrugOrder.getFrequency().getConcept() != null) && (openMRSDrugOrder.getFrequency().getConcept().getPreferredName(new Locale((locale))) != null)) {
                 bahmniDrugOrder.getDrugOrder().getDosingInstructions().setFrequency(openMRSDrugOrder.getFrequency().getConcept().getPreferredName(new Locale((locale))).getName());
             }
             bahmniDrugOrder.setVisit(openMRSDrugOrder.getEncounter().getVisit());

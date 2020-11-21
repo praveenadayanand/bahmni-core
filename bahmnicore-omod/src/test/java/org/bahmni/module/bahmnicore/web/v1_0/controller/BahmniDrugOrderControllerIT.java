@@ -55,7 +55,7 @@ public class BahmniDrugOrderControllerIT extends BaseIntegrationTest {
     @Test
     public void shouldReturnVisitWisePrescribedAndOtherActiveOrdersInOrderOfStartDate() throws Exception {
         executeDataSet("prescribedAndActiveDrugOrdersForVisits.xml");
-        Map<String, Collection<BahmniDrugOrder>> drugOrders = bahmniDrugOrderController.getVisitWisePrescribedAndOtherActiveOrders("1a246ed5-3c11-11de-a0ba-001ed98eb67a", 1, true, new ArrayList(), null, null, false);
+        Map<String, Collection<BahmniDrugOrder>> drugOrders = bahmniDrugOrderController.getVisitWisePrescribedAndOtherActiveOrders("1a246ed5-3c11-11de-a0ba-001ed98eb67a", 1, true, new ArrayList(), null, null, false , "en") ;
         assertEquals(2, drugOrders.keySet().size());
 
         assertEquals(1, drugOrders.get("visitDrugOrders").size());
@@ -70,7 +70,7 @@ public class BahmniDrugOrderControllerIT extends BaseIntegrationTest {
     public void shouldReturnVisitWiseEffectiveDrugOrdersInADateRange() throws Exception {
         executeDataSet("prescribedAndActiveDrugOrdersForVisits.xml");
 
-        Map<String, Collection<BahmniDrugOrder>> drugOrders = bahmniDrugOrderController.getVisitWisePrescribedAndOtherActiveOrders("1a246ed5-3c11-11de-a0ba-001ed98eb67a", 5, false, new ArrayList(), "2005-09-22T18:30:00.000", "2015-01-05T18:30:00.000", true);
+        Map<String, Collection<BahmniDrugOrder>> drugOrders = bahmniDrugOrderController.getVisitWisePrescribedAndOtherActiveOrders("1a246ed5-3c11-11de-a0ba-001ed98eb67a", 5, false, new ArrayList(), "2005-09-22T18:30:00.000", "2015-01-05T18:30:00.000", true ,"en");
         Iterator<BahmniDrugOrder> drugOrderIterator = drugOrders.get("visitDrugOrders").iterator();
 
         assertEquals(3, drugOrders.get("visitDrugOrders").size());
@@ -82,7 +82,7 @@ public class BahmniDrugOrderControllerIT extends BaseIntegrationTest {
     @Test
     public void shouldReturnVisitWisePrescribedAndOtherActiveOrdersByVisitUuid() throws Exception {
         executeDataSet("prescribedAndActiveDrugOrdersForVisits.xml");
-        Map<String, Collection<BahmniDrugOrder>> drugOrders = bahmniDrugOrderController.getVisitWisePrescribedAndOtherActiveOrders("1a246ed5-3c11-11de-a0ba-001ed98eb67a", 1, true, Arrays.asList("c809162f-dc55-4814-be3f-33d23c8abc1d"),null, null, false);
+        Map<String, Collection<BahmniDrugOrder>> drugOrders = bahmniDrugOrderController.getVisitWisePrescribedAndOtherActiveOrders("1a246ed5-3c11-11de-a0ba-001ed98eb67a", 1, true, Arrays.asList("c809162f-dc55-4814-be3f-33d23c8abc1d"),null, null, false, "en");
         assertEquals(2, drugOrders.keySet().size());
 
         assertEquals(1, drugOrders.get("visitDrugOrders").size());
@@ -95,7 +95,7 @@ public class BahmniDrugOrderControllerIT extends BaseIntegrationTest {
     @Test
     public void shouldReturnVisitWisePrescribedWithoutOtherActiveOrdersInOrderOfStartDate() throws Exception {
         executeDataSet("prescribedAndActiveDrugOrdersForVisits.xml");
-        Map<String, Collection<BahmniDrugOrder>> drugOrders = bahmniDrugOrderController.getVisitWisePrescribedAndOtherActiveOrders("1a246ed5-3c11-11de-a0ba-001ed98eb67a", 2, true, new ArrayList(), null, null, false);
+        Map<String, Collection<BahmniDrugOrder>> drugOrders = bahmniDrugOrderController.getVisitWisePrescribedAndOtherActiveOrders("1a246ed5-3c11-11de-a0ba-001ed98eb67a", 2, true, new ArrayList(), null, null, false,"en");
         assertEquals(2, drugOrders.keySet().size());
 
         assertEquals(5, drugOrders.get("visitDrugOrders").size());
@@ -108,7 +108,7 @@ public class BahmniDrugOrderControllerIT extends BaseIntegrationTest {
 
         assertEquals(0, drugOrders.get("Other Active DrugOrders").size());
 
-        drugOrders = bahmniDrugOrderController.getVisitWisePrescribedAndOtherActiveOrders("1a246ed5-3c11-11de-a0ba-001ed98eb67a", 2, false, new ArrayList(), null, null, false);
+        drugOrders = bahmniDrugOrderController.getVisitWisePrescribedAndOtherActiveOrders("1a246ed5-3c11-11de-a0ba-001ed98eb67a", 2, false, new ArrayList(), null, null, false,"en");
         assertEquals(1, drugOrders.keySet().size());
         assertNull(drugOrders.get("Other Active DrugOrders"));
 
